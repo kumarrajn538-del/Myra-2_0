@@ -306,13 +306,8 @@
 
         function speak(text) {
     window.speechSynthesis.cancel();
-    
-    // यह रहा वो फ़िल्टर, जो फालतू कचरा साफ़ कर देगा!
-    let cleanText = text.replace(/[\*\#\_]/g, ""); 
-    
-    // अब यहाँ cleanText का इस्तेमाल हो रहा है
-    const msg = new SpeechSynthesisUtterance(cleanText); 
-    msg.lang = 'hi-IN'; 
+    const msg = new SpeechSynthesisUtterance(text); // यहाँ सीधा 'text' ही रहने दे
+    msg.lang = 'hi-IN';
     msg.rate = 1.0;
     window.speechSynthesis.speak(msg);
         }
