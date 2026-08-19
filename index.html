@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/vconsole@latest/dist/vconsole.min.js"></script>
+    <script>var vConsole = new VConsole();</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MYRA AI 2.0 : SYSTEM</title>
@@ -305,11 +307,11 @@
         function closeChat() { chatScreen.style.display = 'none'; homeScreen.style.display = 'flex'; }
 
         function speak(text) {
-    window.speechSynthesis.cancel();
-    const msg = new SpeechSynthesisUtterance(text); // यहाँ सीधा 'text' ही रहने दे
-    msg.lang = 'hi-IN';
-    msg.rate = 1.0;
-    window.speechSynthesis.speak(msg);
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'hi-IN';
+            msg.rate = 1.0;
+            window.speechSynthesis.speak(msg);
         }
 
         function appendMessage(sender, text) {
@@ -320,7 +322,7 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // ⚡ 4. CORE API FUNCTION (Gemini 2.0 Flash + Error Alerts)
+        // ⚡ 4. CORE API FUNCTION (Gemini 2.5 Flash + Error Alerts)
         async function processQuery() {
             const text = userInput.value.trim();
             if (!text) return;
@@ -332,15 +334,13 @@
             chatHistory.push({ role: "user", parts: [{ text: text }] });
 
             try {
-                // 🟢 LATEST MODEL: gemini-3.5-flash
-                let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
                 
-                
-                // 🟢 CORRECT PAYLOAD STRUCTURE
                 let fullPayload = {
                     system_instruction: {
-                        parts: [{ text: "You are Myra AI 2.0, Boss Niraj's highly advanced system assistant. Speak in a professional, direct, and helpful Hinglish tone. CRITICAL RULES: 1. Do NOT use unnecessary repetitive words or annoying patterns (absolutely no 'tarankar tarankar'). 2. Do NOT fake laugh or giggle. 3. Use emojis sparingly. 4. Keep responses sharp, accurate, and to the point."
-                                 
+                        parts: [{ 
+                            text: "You are Myra AI 2.0, Boss Niraj's highly advanced system assistant. Speak in a professional, direct, and helpful Hinglish tone. CRITICAL RULES: 1. Do NOT use unnecessary repetitive words or annoying filler patterns. 2. Do NOT fake laugh or giggle (no haha/hehe). 3. Keep responses clean, sharp, accurate, and to the point." 
+                        }]
                     },
                     contents: chatHistory
                 };
@@ -354,7 +354,6 @@
                 const data = await response.json();
                 typingIndicator.style.display = 'none';
 
-                // 🚨 ALERT SYSTEM: If Google blocks/fails
                 if (data.error) {
                     alert("🚨 GOOGLE API ERROR: " + data.error.message);
                     appendMessage('myra', "API Error! Screen par pop-up check karo.");
@@ -362,17 +361,22 @@
                     return;
                 }
 
-                        if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-            let aiReply = data.candidates[0].content.parts[0].text;
-            aiReply = aiReply.replace(/[\*\#\_]/g, ""); 
-            chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
-            localStorage.setItem('MYRA_MEMORY', JSON.stringify(chatHistory));
-            appendMessage('myra', aiReply);
-            speak(aiReply);
-        } else {
-            appendMessage('myra', "Error: Response missing.");
-                        }
-                
+                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+                    let aiReply = data.candidates[0].content.parts[0].text;
+
+                    // 🛡️ कचरा साफ करने वाला फिल्टर:
+                    aiReply = aiReply.replace(/[\*\#\_]/g, ""); 
+
+                    chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
+                    localStorage.setItem('MYRA_MEMORY', JSON.stringify(chatHistory));
+
+                    appendMessage('myra', aiReply);
+                    speak(aiReply);
+                } else {
+                    appendMessage('myra', "Error: System response failed.");
+                    chatHistory.pop(); 
+                }
+
             } catch (error) {
                 typingIndicator.style.display = 'none';
                 alert("🚨 NETWORK ERROR: " + error.message);
