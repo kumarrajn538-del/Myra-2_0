@@ -368,15 +368,17 @@
                 }
 
                 if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-                    let aiReply = data.candidates[0].content.parts[0].text;
-                    
-                    chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
-                    // Keep memory limit to last 20 messages
-                    if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
-                    localStorage.setItem('MYRA_MEMORY', JSON.stringify(chatHistory));
+                    // लाइन 370 के बाद का हिस्सा ऐसा होना चाहिए:
+let aiReply = data.candidates[0].content.parts[0].text;
 
-                    appendMessage('myra', aiReply);
-                    speak(aiReply);
+// 👉 ये रही फिल्टर वाली लाइन, इसे भूलना मत!
+aiReply = aiReply.replace(/[\*\#\_]/g, ""); 
+
+chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
+
+// ...बाकी तेरा पुराना कोड...
+appendMessage('myra', aiReply);
+speak(aiReply);
                 } else {
                     appendMessage('myra', "Error: System response failed.");
                     chatHistory.pop(); 
