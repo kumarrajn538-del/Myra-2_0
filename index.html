@@ -362,12 +362,14 @@
                     return;
                 }
 
-                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-                    // लाइन 370 के बाद का हिस्सा ऐसा होना चाहिए:
-let aiReply = data.candidates[0].content.parts[0].text;
-
-// 👉 ये रही फिल्टर वाली लाइन, इसे भूलना मत!
-aiReply = aiReply.replace(/[\*\#\_]/g, ""); 
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+    let aiReply = data.candidates[0].content.parts[0].text;
+    
+    // तेरी फिल्टर वाली लाइन (लाइन 375)
+    aiReply = aiReply.replace(/[\*\#\_]/g, ""); 
+    
+    // ...बाकी कोड...
+                }
 
 chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
 
