@@ -362,22 +362,16 @@
                     return;
                 }
 
-                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-    let aiReply = data.candidates[0].content.parts[0].text;
-
-    // फिल्टर यहाँ काम करेगा
-    aiReply = aiReply.replace(/[\*\#\_]/g, ""); 
-
-    chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
-    localStorage.setItem('MYRA_MEMORY', JSON.stringify(chatHistory));
-
-    appendMessage('myra', aiReply);
-    speak(aiReply);
-    
-} else {
-    // यहाँ एल्स वाला कोड आएगा
-    appendMessage('myra', "Error: Response missing.");
-                }
+                        if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+            let aiReply = data.candidates[0].content.parts[0].text;
+            aiReply = aiReply.replace(/[\*\#\_]/g, ""); 
+            chatHistory.push({ role: "model", parts: [{ text: aiReply }] });
+            localStorage.setItem('MYRA_MEMORY', JSON.stringify(chatHistory));
+            appendMessage('myra', aiReply);
+            speak(aiReply);
+        } else {
+            appendMessage('myra', "Error: Response missing.");
+                        }
                 
             } catch (error) {
                 typingIndicator.style.display = 'none';
