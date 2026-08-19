@@ -322,7 +322,7 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // ⚡ 4. CORE API FUNCTION (Gemini 2.5 Flash + Error Alerts)
+        // ⚡ 4. CORE API FUNCTION (gemini-3.6-flash + Error Alerts)
         async function processQuery() {
             const text = userInput.value.trim();
             if (!text) return;
@@ -334,7 +334,7 @@
             chatHistory.push({ role: "user", parts: [{ text: text }] });
 
             try {
-                let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                let url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`;
                 
                 let fullPayload = {
                     system_instruction: {
